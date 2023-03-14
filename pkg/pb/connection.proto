@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package connection;
+
+option go_package = "./pkg/pb";
+
+service Connection {
+  rpc CreateSet(CreateSetRequest) returns (CreateSetResponse) {}
+  rpc GetSet(GetSetRequest) returns (GetSetResponse) {}
+  rpc DeleteSet(DeleteSetRequest) returns (DeleteSetResponse) {}
+  rpc AddToSet(AddToSetRequest) returns (AddToSetResponse) {}
+  rpc RemoveFromSet(RemoveFromSetRequest) returns (RemoveFromSetResponse) {}
+}
+
+message SetInfo {
+  string setFor = 1;
+  string id = 2;
+  string setOf = 3;
+}
+
+message CreateSetRequest {
+  SetInfo set = 1;
+}
+
+message CreateSetResponse {
+  bool success = 1;
+}
+
+message GetSetRequest {
+  SetInfo set = 1;
+}
+
+message GetSetResponse {
+  repeated string items = 1;
+}
+
+message DeleteSetRequest {
+  SetInfo set = 1;
+}
+
+message DeleteSetResponse {
+  bool success = 1;
+}
+
+message AddToSetRequest {
+  SetInfo set = 1;
+  repeated string items = 2;
+}
+
+message AddToSetResponse {
+  bool success = 1;
+}
+
+message RemoveFromSetRequest {
+  SetInfo set = 1;
+  repeated string items = 2;
+}
+
+message RemoveFromSetResponse {
+  bool success = 1;
+}
