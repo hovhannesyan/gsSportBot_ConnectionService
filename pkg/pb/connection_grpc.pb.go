@@ -22,7 +22,6 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ConnectionClient interface {
-	CreateSet(ctx context.Context, in *CreateSetRequest, opts ...grpc.CallOption) (*CreateSetResponse, error)
 	GetSet(ctx context.Context, in *GetSetRequest, opts ...grpc.CallOption) (*GetSetResponse, error)
 	DeleteSet(ctx context.Context, in *DeleteSetRequest, opts ...grpc.CallOption) (*DeleteSetResponse, error)
 	AddToSet(ctx context.Context, in *AddToSetRequest, opts ...grpc.CallOption) (*AddToSetResponse, error)
@@ -35,15 +34,6 @@ type connectionClient struct {
 
 func NewConnectionClient(cc grpc.ClientConnInterface) ConnectionClient {
 	return &connectionClient{cc}
-}
-
-func (c *connectionClient) CreateSet(ctx context.Context, in *CreateSetRequest, opts ...grpc.CallOption) (*CreateSetResponse, error) {
-	out := new(CreateSetResponse)
-	err := c.cc.Invoke(ctx, "/connection.Connection/CreateSet", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *connectionClient) GetSet(ctx context.Context, in *GetSetRequest, opts ...grpc.CallOption) (*GetSetResponse, error) {
@@ -86,7 +76,6 @@ func (c *connectionClient) RemoveFromSet(ctx context.Context, in *RemoveFromSetR
 // All implementations must embed UnimplementedConnectionServer
 // for forward compatibility
 type ConnectionServer interface {
-	CreateSet(context.Context, *CreateSetRequest) (*CreateSetResponse, error)
 	GetSet(context.Context, *GetSetRequest) (*GetSetResponse, error)
 	DeleteSet(context.Context, *DeleteSetRequest) (*DeleteSetResponse, error)
 	AddToSet(context.Context, *AddToSetRequest) (*AddToSetResponse, error)
@@ -98,9 +87,6 @@ type ConnectionServer interface {
 type UnimplementedConnectionServer struct {
 }
 
-func (UnimplementedConnectionServer) CreateSet(context.Context, *CreateSetRequest) (*CreateSetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateSet not implemented")
-}
 func (UnimplementedConnectionServer) GetSet(context.Context, *GetSetRequest) (*GetSetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSet not implemented")
 }
@@ -124,24 +110,6 @@ type UnsafeConnectionServer interface {
 
 func RegisterConnectionServer(s grpc.ServiceRegistrar, srv ConnectionServer) {
 	s.RegisterService(&Connection_ServiceDesc, srv)
-}
-
-func _Connection_CreateSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateSetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ConnectionServer).CreateSet(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/connection.Connection/CreateSet",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConnectionServer).CreateSet(ctx, req.(*CreateSetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Connection_GetSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -223,10 +191,6 @@ var Connection_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "connection.Connection",
 	HandlerType: (*ConnectionServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CreateSet",
-			Handler:    _Connection_CreateSet_Handler,
-		},
 		{
 			MethodName: "GetSet",
 			Handler:    _Connection_GetSet_Handler,

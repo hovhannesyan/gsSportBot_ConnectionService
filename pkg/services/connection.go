@@ -12,25 +12,6 @@ type Server struct {
 	pb.UnimplementedConnectionServer
 }
 
-func (s *Server) CreateSet(ctx context.Context, req *pb.CreateSetRequest) (*pb.CreateSetResponse, error) {
-	dummyElement := "dummy"
-	_, err := s.DbHandler.DB.SAdd(ctx, utils.SetKeyToString(req.Set), dummyElement).Result()
-	if err != nil {
-		return &pb.CreateSetResponse{
-			Success: false,
-		}, err
-	}
-	_, err = s.DbHandler.DB.SRem(ctx, utils.SetKeyToString(req.Set), dummyElement).Result()
-	if err != nil {
-		return &pb.CreateSetResponse{
-			Success: false,
-		}, err
-	}
-	return &pb.CreateSetResponse{
-		Success: true,
-	}, nil
-}
-
 func (s *Server) GetSet(ctx context.Context, req *pb.GetSetRequest) (*pb.GetSetResponse, error) {
 	res, err := s.DbHandler.DB.SMembers(ctx, utils.SetKeyToString(req.Set)).Result()
 	if err != nil {
